@@ -1,0 +1,11 @@
+torch>=2.0.0
+torchvision
+numpy
+opencv-python
+tqdm
+matplotlib
+scikit-learn
+ultralytics>=8.0.0
+segmentation-models-pytorch
+jupyter
+pandas
