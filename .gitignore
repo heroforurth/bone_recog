@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Models and checkpoints
+*.pth
+*.pt
+*.h5
+*.onnx
+
+# Datasets and generated directories
+Bone_Fracture_Binary_Classification/
+masks/
+not_bone/
+temp_sam3/
+sam_visualizations/
+
+# Logs and errors
+*.err
+*.out
+*.log
+training_log.txt
+ae_threshold.txt
+evaluation_report.txt
+
+# Generated images
+*.png
+*.jpg
+*.jpeg
+
+# Jupyter Notebook
+.ipynb_checkpoints/
