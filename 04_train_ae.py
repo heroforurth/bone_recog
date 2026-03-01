@@ -10,14 +10,13 @@ from anomaly_model import ConvAutoencoder
 import matplotlib.pyplot as plt
 
 # Configuration
-DATA_ROOT = "Bone_Fracture_Binary_Classification/Bone_Fracture_Binary_Classification"
+DATA_ROOT = "/Users/padanumawilai/Documents/GitHub/bone_recog/Bone_Fracture_Binary_Classification/Bone_Fracture_Binary_Classification/Bone_Fracture_Binary_Classification"
 MODEL_SAVE_PATH = "ae_bone.pth"
 THRESHOLD_FILE = "ae_threshold.txt"
 IMG_SIZE = 128 # Smaller size for AE is usually sufficient for structure
 BATCH_SIZE = 32
 EPOCHS = 20
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
+DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
 # --- Dataset Definition (Simplified for Reconstruction) ---
 class BoneReconDataset(Dataset):
     def __init__(self, split="train"):
@@ -46,12 +45,23 @@ class BoneReconDataset(Dataset):
     def __len__(self):
         return len(self.image_paths)
 
+
+
     def __getitem__(self, idx):
         img_path = self.image_paths[idx]
         
         # Load Image
         image = cv2.imread(img_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        # --- ADD THIS CHECK ---
+        if image is None:
+            print(f"Warning: Skipping corrupted image: {img_path}")
+            # Return a blank/black image as a placeholder to avoid crashing
+            image = np.zeros((IMG_SIZE, IMG_SIZE, 3), dtype=np.uint8)
+        else:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # ----------------------
+        
         image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
         
         # Normalize 0-1
@@ -60,6 +70,20 @@ class BoneReconDataset(Dataset):
         
         # Return image as both input and target
         return torch.tensor(image), torch.tensor(image)
+    # def __getitem__(self, idx):
+    #     img_path = self.image_paths[idx]
+        
+    #     # Load Image
+    #     image = cv2.imread(img_path)
+    #     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    #     image = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
+        
+    #     # Normalize 0-1
+    #     image = image / 255.0
+    #     image = np.transpose(image, (2, 0, 1)).astype(np.float32) 
+        
+    #     # Return image as both input and target
+    #     return torch.tensor(image), torch.tensor(image)
 
 def train():
     print(f"Using device: {DEVICE}")
